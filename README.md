@@ -7,8 +7,8 @@ Platformify is a robust, multi-tenant white-label booking marketplace engine. It
 The platform uses a **Decentralized Access Control (DBAC)** model within Firebase:
 - **Global Auth:** Users are managed via Firebase Authentication.
 - **Top-Level Tenants:** Each marketplace is a document in the `/platforms` collection.
-- **Isolated Data:** Listings, Bookings, and Customers are sub-collections under each platform, ensuring data isolation.
-- **Security:** Firestore Security Rules enforce multi-tenant boundaries using denormalized `ownerId` fields on all child documents.
+- **Standardized "Sister Schemas":** Every tenant uses the same high-level schema for Listings and Bookings. This creates a massive, interoperable dataset that allows the platform to provide "Deep Learning" insights across all niche markets.
+- **Isolated Data:** Data is stored in sub-collections under each platform, ensuring strict multi-tenant boundaries enforced by Firestore Security Rules.
 
 ## 🛠️ Tech Stack
 
@@ -21,7 +21,10 @@ The platform uses a **Decentralized Access Control (DBAC)** model within Firebas
 
 ## 🤖 AI Features
 
-Platformify integrates **Genkit** to provide an "AI Listing Assistant." It takes basic property details and generates high-converting marketing copy and SEO keywords using specialized prompt templates.
+Platformify integrates **Genkit** to provide an "AI Listing Assistant" and a framework for agentic orchestrators. By leveraging the standardized "Sister Schemas," AI agents can perform:
+- **Yield Optimization:** Predictive pricing based on cross-platform data.
+- **Profit Protection:** Ensuring listings maintain target margins against raw costs.
+- **Generative Previews:** Using Imagen to render custom booking arrangements in real-time.
 
 ## 🚀 Getting Started
 
@@ -42,4 +45,5 @@ Platformify integrates **Genkit** to provide an "AI Listing Assistant." It takes
 
 Detailed schema and vision documents can be found in the `/docs` folder:
 - `backend.json`: The source of truth for the database schema.
+- `ai-orchestration-guide.md`: Blueprint for building "Deep Learning" agentic extensions.
 - `original-prompt.md`: The architectural vision used to bootstrap this project.
