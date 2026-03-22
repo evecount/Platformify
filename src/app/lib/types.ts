@@ -32,19 +32,15 @@ export interface Listing {
   title: string;
   description: string;
   pricePerDay: number;
-  baseCost?: number; // Added for margin tracking
+  baseCost?: number; // Raw operational cost for margin guarding
   imageUrl?: string;
   location: string;
-  keyFeatures: string[];
   capacity: number;
-  amenities: string[];
-  nearbyAttractions: string[];
-  uniqueSellingPoints: string[];
   status: "active" | "inactive";
   createdAt: string;
   /**
-   * AI Metadata: Used for the 'Booking Agnostic Consumer Prediction Model'.
-   * Stores high-dimensional features like 'vibe', 'luxury_index', or 'seasonal_demand'.
+   * AI Metadata: High-dimensional features like 'vibe', 'luxury_index'.
+   * Used for the global cross-platform prediction engine.
    */
   aiMetadata?: Record<string, any>;
 }
@@ -58,12 +54,11 @@ export interface Booking {
   startDate: string;
   endDate: string;
   totalPrice: number;
-  calculatedMargin?: number; // Added for deep learning yield tracking
+  calculatedMargin?: number; // Recorded at booking for deep learning yield tracking
   status: "pending" | "confirmed" | "completed" | "cancelled";
   createdAt: string;
   /**
-   * Purchase Signals: Stores conversion triggers, lead times, and behavioral markers
-   * that feed the cross-platform prediction engine.
+   * Purchase Signals: Conversion triggers and behavioral markers.
    */
   purchaseContext?: Record<string, any>;
 }
@@ -74,5 +69,9 @@ export interface Customer {
   ownerId: string;
   name: string;
   email: string;
+  /**
+   * Behavioral Persona: Calculated by the Orchestrator across all sisters.
+   */
+  aiPersona?: string;
   booking_history?: string[];
 }

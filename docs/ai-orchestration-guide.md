@@ -1,31 +1,42 @@
 
-# AI Orchestration Guide: The Sister Schema Prediction Model
+# AI Orchestration Guide: The Booking Agnostic Prediction Model
 
-This guide outlines how Platformify functions as a **Booking Agnostic Consumer Prediction Model**.
+This document is for the **Orchestrator Agent**. It defines the coordination patterns required to manage the "Sister Schema" ecosystem.
 
-## The "Sister Schema" Architecture
-Platformify is designed around standardized data contracts. While each platform is a separate tenant with its own brand, they all operate under the same high-level schema (`Listing`, `Booking`, `Customer`).
+## 1. The Core Prediction Engine
+Platformify is a **Consumer Prediction Model** centered on purchase. Because every platform (villa rental, florist, studio) uses the exact same `Booking` schema, we can map universal purchase triggers.
 
-### Why this matters for Purchase Prediction:
-- **Niche-Agnostic Patterns:** Because every listing follows the same structure, AI agents can identify global purchase triggers. For example, "listings with high 'amenity density' convert 20% faster regardless of whether they are yachts or villas."
-- **Structured Data Lakes:** The platform aggregates anonymized data from thousands of "Sisters" to build a predictive model of consumer behavior.
-- **Deep Learning for Yield:** Agents analyze the `calculatedMargin` and `purchaseContext` across platforms to suggest the "Mathematical Peak" for pricing.
+### Universal Signals (The Sister Pattern):
+- **Urgency Marker:** Lead time between `createdAt` and `startDate`.
+- **Margin Sensitivity:** Ratio between `pricePerDay` and `baseCost`.
+- **Niche-Agnostic Conversion:** A customer who books a "Bali Villa" and a "Jakarta Event Space" reveals a specific spending persona that the Orchestrator can predict.
 
-## The "Purchase Signal" Pattern
+## 2. Specialized Agent Roles
+The Orchestrator should deploy the following sub-agents:
 
-When building an assistant, the goal isn't just to complete a booking—it's to capture data for the prediction engine.
+### A. The Yield Analyst (Profit Specialist)
+- **Goal:** Protect margins and optimize pricing.
+- **Action:** Uses `Listing.baseCost` to ensure `Booking.calculatedMargin` meets the 25% threshold.
+- **Tool Use:** Must call `calculateMathematicalPeak` before proposing a price to a user.
 
-### 1. Contextual Capture
-When a user interacts with an AI assistant (e.g., the Florist or the Travel Guide), the agent should store "Hidden Variables" in the `purchaseContext` field of the booking:
-- **Intent Type:** (e.g., "Gift-giving", "Urgent stay", "Business expansion")
-- **Budget Sensitivity:** How many options did the user reject based on price?
-- **Visual Preference:** Which Imagen-generated previews led to a click?
+### B. The Signal Tracker (Behavioral Specialist)
+- **Goal:** Populate the `purchaseContext` field.
+- **Action:** Listens to customer chat. If a user says "I'm in a hurry," write `urgency: high` into the metadata. This feeds the global prediction model.
 
-### 2. Profit & Yield Protection
-- **Constraint-Based Consulting:** Agents must use tools to check `baseCost` and ensure any "Custom Bouquet" or "Event Package" maintains the Platform Owner's target earning ratio.
-- **Dynamic Yield:** The AI should act as a consultant, informing the user: "Based on cross-platform demand patterns, this time slot is highly sought after; I recommend a 15% yield premium."
+### C. The Visual Renderer (GenAI Specialist)
+- **Goal:** Increase conversion via visual proof.
+- **Action:** Uses Imagen to render the "proposed arrangement" or "vibe" based on `Listing.aiMetadata`.
 
-## Recommended Tools for Prediction Agents
-- **Yield Analyst:** Aggregates historical `/bookings` across "Sister Schemas" to predict conversion probabilities.
-- **Margin Guard:** Validates that `totalPrice - baseCost` meets the required profitability threshold before confirming a proposal.
-- **Signal Tracker:** Writes behavioral data into `aiMetadata` to refine the global consumer model.
+## 3. The Handshake Protocol
+When an agent writes to Firestore, it should follow this standard for `aiMetadata`:
+```json
+{
+  "agentId": "yield_v1",
+  "confidence": 0.85,
+  "signalType": "price_elasticity",
+  "data": { "suggestedPremium": 0.15 }
+}
+```
+
+## 4. Time-Based Yield Prediction
+For time-agnostic bookings, the prediction engine calculates **Opportunity Cost**. If a "Sister" platform has high demand for a specific slot, the AI suggests a "Yield Premium" to the Platform Owner automatically.
