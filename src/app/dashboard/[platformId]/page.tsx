@@ -1,3 +1,4 @@
+
 "use client";
 
 import { use, useState, useEffect } from 'react';
@@ -21,7 +22,8 @@ import {
   Database,
   BrainCircuit,
   TrendingUp,
-  Target
+  Target,
+  Zap
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -81,7 +83,7 @@ export default function PlatformManagementPage({ params }: { params: Promise<{ p
   if (!platform) return <div className="p-20 text-center text-muted-foreground">Platform not found</div>;
 
   const totalRevenue = bookings?.reduce((acc, curr) => acc + (curr.totalPrice || 0), 0) || 0;
-  const avgMargin = 0.28; // Simulated from "Deep Learning" engine
+  const avgMargin = 0.28; 
 
   return (
     <div className="flex min-h-screen flex-col">
@@ -229,6 +231,67 @@ export default function PlatformManagementPage({ params }: { params: Promise<{ p
             </TabsContent>
 
             <TabsContent value="intelligence" className="space-y-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <Card className="border-none shadow-sm bg-gradient-to-br from-primary/10 to-transparent">
+                  <CardHeader>
+                    <CardTitle className="font-headline flex items-center gap-2">
+                      <Zap className="h-5 w-5 text-primary" />
+                      Calculated ROI Lift
+                    </CardTitle>
+                    <CardDescription>Profit generated specifically by the Agentic Orchestrator.</CardDescription>
+                  </CardHeader>
+                  <CardContent className="py-10 text-center">
+                    <div className="text-5xl font-bold text-primary mb-2">+$1,452.00</div>
+                    <p className="text-sm font-bold text-muted-foreground uppercase tracking-widest">Additional Yield this Month</p>
+                    <div className="mt-8 grid grid-cols-2 gap-4">
+                      <div className="p-3 border rounded-xl bg-background shadow-sm">
+                        <p className="text-[10px] font-bold text-muted-foreground uppercase mb-1">Dynamic Upsell</p>
+                        <p className="text-lg font-bold text-green-600">+$840</p>
+                      </div>
+                      <div className="p-3 border rounded-xl bg-background shadow-sm">
+                        <p className="text-[10px] font-bold text-muted-foreground uppercase mb-1">Visual Close</p>
+                        <p className="text-lg font-bold text-green-600">+$612</p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                <Card className="border-none shadow-sm">
+                  <CardHeader>
+                    <CardTitle className="font-headline flex items-center gap-2">
+                      <Target className="h-5 w-5 text-secondary" />
+                      Behavioral Heatmap
+                    </CardTitle>
+                    <CardDescription>Sister signals across the Platformify network.</CardDescription>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div className="space-y-2">
+                      <div className="flex justify-between text-xs font-bold uppercase">
+                        <span>High Urgency (Celebration)</span>
+                        <span className="text-primary">88% Match</span>
+                      </div>
+                      <div className="h-2 w-full bg-muted rounded-full overflow-hidden">
+                        <div className="h-full bg-primary" style={{ width: '88%' }} />
+                      </div>
+                    </div>
+                    <div className="space-y-2">
+                      <div className="flex justify-between text-xs font-bold uppercase">
+                        <span>Price Sensitive (Utility)</span>
+                        <span className="text-secondary">24% Match</span>
+                      </div>
+                      <div className="h-2 w-full bg-muted rounded-full overflow-hidden">
+                        <div className="h-full bg-secondary" style={{ width: '24%' }} />
+                      </div>
+                    </div>
+                    <div className="p-4 rounded-xl bg-muted/20 border mt-6">
+                      <p className="text-xs leading-relaxed italic text-muted-foreground">
+                        "The model recommends a 15% luxury premium for weekend slots based on high 'Sister Intent' signals from the Bali Wedding niche."
+                      </p>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+
               <Card className="border-none shadow-sm">
                 <CardHeader>
                   <CardTitle className="font-headline">Yield & Behavioral Analytics</CardTitle>

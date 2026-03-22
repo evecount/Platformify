@@ -1,3 +1,4 @@
+
 # AI Orchestration Guide: The Booking Agnostic Prediction Model
 
 This document is for the **Orchestrator Agent**. It defines the coordination patterns required to manage the "Sister Schema" ecosystem.
@@ -14,30 +15,19 @@ Platformify is a **Consumer Prediction Model** centered on purchase. Because eve
 The Orchestrator should deploy the following sub-agents:
 
 ### A. The Yield Analyst (Profit Specialist)
-- **Goal:** Protect margins and optimize pricing.
+- **Goal:** Protect margins and optimize pricing. **ROI is the primary metric.**
 - **Action:** Uses `Listing.baseCost` to ensure `Booking.calculatedMargin` meets the 25% threshold.
-- **Tool Use:** Must call `predictYield` (Genkit flow) before proposing a price to a user.
+- **Tool Use:** Must call `predictYield` (Genkit flow) before proposing a price.
 
 ### B. The Signal Tracker (Behavioral Specialist)
 - **Goal:** Populate the `purchaseContext` field.
-- **Action:** Listens to customer interactions. If a user says "I'm in a hurry," write `urgency: high` into the metadata. This feeds the global prediction model.
+- **Action:** Maps domain-specific noise (e.g., "I need flowers for my anniversary") to universal signals (e.g., `intent: celebration`, `urgency: high`).
 
 ### C. The Visual Renderer (GenAI Specialist)
 - **Goal:** Increase conversion via visual proof.
-- **Action:** Uses Imagen to render the "proposed arrangement" or "vibe" based on `Listing.aiMetadata`.
+- **Action:** Uses Imagen to render the "proposed arrangement" based on `Listing.aiMetadata`.
 
-## 3. Cross-Tenant Data Synthesis
-The "Secret Sauce" of Platformify is the **Data Homogenization**.
-- **The Global Rosetta Stone:** Because Tenant A (Villas) and Tenant B (Florists) share the same `Booking` schema, the Orchestrator can train behavioral weights on Tenant B's high-frequency transactions to predict conversion for Tenant A's low-frequency, high-ticket transactions.
-- **Handshake Protocol:** When writing to Firestore, always use standard keys: `urgency`, `sensitivity`, `intent`, `aesthetic`.
-
-## 4. The Handshake Protocol
-When an agent writes to Firestore, it should follow this standard for `aiMetadata`:
-```json
-{
-  "agentId": "yield_v1",
-  "confidence": 0.85,
-  "signalType": "price_elasticity",
-  "data": { "suggestedPremium": 0.15 }
-}
-```
+## 3. The "Sister Schema" Synthesis
+The Orchestrator treats every independent platform as a "Data Probe."
+- **Pattern Matching:** If the model sees a high conversion rate for "Last Minute" bookings in the Florist niche, it tests that weight in the Villa niche. 
+- **The Global Rosetta Stone:** Standardized keys (`urgency`, `sensitivity`, `intent`) are the only language the model speaks.
