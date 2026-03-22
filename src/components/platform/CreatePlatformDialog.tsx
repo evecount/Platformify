@@ -99,6 +99,10 @@ export function CreatePlatformDialog({ trigger }: CreatePlatformDialogProps) {
         )}
       </DialogTrigger>
       <DialogContent className="sm:max-w-[500px] p-0 overflow-hidden">
+        <DialogHeader className="sr-only">
+          <DialogTitle>Create New Platform</DialogTitle>
+          <DialogDescription>Setup your white-label booking platform in three steps.</DialogDescription>
+        </DialogHeader>
         <div className="flex flex-col h-full">
           {/* Progress Header */}
           <div className="bg-muted/30 px-6 py-4 border-b flex justify-between items-center">
