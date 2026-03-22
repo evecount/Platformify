@@ -29,4 +29,5 @@ Platformify goes beyond "Chatbots." It enables **Intelligent Consultants** that:
 Detailed blueprints for AI agents and the data engine can be found in:
 - `docs/backend.json`: The "Sister Schema" source of truth.
 - `docs/ai-orchestration-guide.md`: Blueprint for building the Prediction Model extensions.
+- `docs/taxonomy.md`: Definition of universal behavioral signals.
 - `docs/original-prompt.md`: The architectural vision.

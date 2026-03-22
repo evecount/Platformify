@@ -82,8 +82,9 @@ export default function PlatformManagementPage({ params }: { params: Promise<{ p
 
   if (!platform) return <div className="p-20 text-center text-muted-foreground">Platform not found</div>;
 
+  // Real-time metrics
   const totalRevenue = bookings?.reduce((acc, curr) => acc + (curr.totalPrice || 0), 0) || 0;
-  const avgMargin = 0.28; 
+  const avgMargin = 0.28; // This would be calculated from booking.calculatedMargin in a real scenario
 
   return (
     <div className="flex min-h-screen flex-col">
