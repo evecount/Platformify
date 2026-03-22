@@ -9,23 +9,24 @@ Build a "Platform for Platforms." A white-label booking marketplace (SaaS) where
 
 ### 1. Multi-Tenant Infrastructure
 - **Global Owner Dashboard:** A central place to manage multiple "Platforms."
-- **Niche Marketplaces:** Each platform must have its own public-facing URL (simulated via `/p/[platformId]`) with custom branding (primary/accent colors).
-- **Security:** Strict multi-tenancy. A customer on Platform A should never see data from Platform B. All data must be authorized via Firebase Security Rules.
+- **Niche Marketplaces:** Each platform must have its own public-facing URL (simulated via `/p/[platformId]`) with custom branding.
+- **Security:** Strict multi-tenancy via Firestore Security Rules and denormalized `ownerId` fields.
 
 ### 2. Airbnb-Style Onboarding
-- **The "Wizard" Experience:** Creating a listing should be a premium, multi-step process (Basics -> Location -> Amenities -> Marketing -> Pricing).
-- **Progress Indicators:** Use visual cues to show completion status.
+- **The "Wizard" Experience:** Multi-step flows for platform creation and listing management (Basics -> Location -> Amenities -> Marketing -> Pricing).
 
-### 3. AI-Powered Marketing
-- Integrate a Generative AI assistant to help platform owners write property descriptions.
-- The AI should be "context-aware," using capacity, location, and amenities to paint a vivid picture for guests.
+### 3. AI-Powered Marketing & Operations
+- **Genkit Integration:** Use Gemini 2.5 Flash for high-speed, cost-effective content generation.
+- **Context-Aware Prompting:** AI must use specific listing metadata (capacity, price, amenities) to ensure accuracy.
 
-### 4. Real-Time Booking Engine
-- Functional booking flow where guests can select dates and guest counts.
-- Real-time updates so owners see new bookings on their dashboard immediately without refreshing.
+### 4. Agentic AI Extension Patterns (New)
+*For future AI Orchestrators:*
+- **Niche Assistants:** Each platform can define "AI Tools" via `themeConfig` or specific collection metadata.
+- **Constraint-Based Generation:** AI flows should not just "generate text" but act as "Consultants" (e.g., a Florist AI balancing budget vs. flower availability).
+- **Tool-Calling:** Use `ai.defineTool` to allow agents to query current inventory or pricing before making recommendations.
 
-### 5. Technical Constraints
-- Use **Next.js 15** and **React 19**.
-- Use **Firebase** for the entire backend (No traditional API layer).
-- Use **Genkit** for AI flows.
-- Adhere to **ShadCN** design patterns for a professional "SaaS" aesthetic.
+## Technical Constraints
+- **Next.js 15** & **React 19**.
+- **Firebase** (Firestore, Auth, App Hosting).
+- **Genkit** for all AI logic.
+- **ShadCN** for UI components.
