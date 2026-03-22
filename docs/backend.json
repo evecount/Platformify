@@ -1,14 +1,15 @@
+
 {
   "entities": {
     "User": {
       "$schema": "http://json-schema.org/draft-07/schema#",
       "title": "User",
       "type": "object",
-      "description": "Represents a platform owner or administrator of the 'Platformify Bookings' system, managing access rights and owned white-label platforms.",
+      "description": "Represents a platform owner or administrator.",
       "properties": {
         "id": {
           "type": "string",
-          "description": "Unique identifier for the User entity."
+          "description": "Unique identifier (Firebase Auth UID)."
         },
         "email": {
           "type": "string",
@@ -17,11 +18,11 @@
         },
         "role": {
           "type": "string",
-          "description": "The role of the user within the platform (e.g., 'platform_owner', 'super_admin')."
+          "description": "The role of the user (e.g., 'platform_owner', 'super_admin')."
         },
         "ownedPlatformIds": {
           "type": "array",
-          "description": "An array of IDs referencing Platforms owned by this user. (Relationship: User 1:N Platform)",
+          "description": "IDs of platforms owned by this user.",
           "items": {
             "type": "string"
           }
@@ -37,32 +38,41 @@
       "$schema": "http://json-schema.org/draft-07/schema#",
       "title": "Platform",
       "type": "object",
-      "description": "Represents a single white-label booking marketplace instance created by a platform owner.",
+      "description": "Represents a white-label booking marketplace instance.",
       "properties": {
         "id": {
           "type": "string",
-          "description": "Unique identifier for the Platform entity."
+          "description": "Unique identifier."
         },
         "ownerId": {
           "type": "string",
-          "description": "Reference to the User who owns this platform. (Relationship: User 1:N Platform)"
+          "description": "UID of the owner."
         },
         "name": {
           "type": "string",
-          "description": "The display name of the white-label booking platform (e.g., 'Indonesian Event Venues')."
+          "description": "Display name of the platform."
+        },
+        "niche": {
+          "type": "string",
+          "description": "The specific market focus (e.g., 'Bali Villas')."
         },
         "customDomain": {
           "type": "string",
-          "description": "The custom domain configured for the white-label platform.",
+          "description": "Custom domain configured for the platform.",
           "format": "uri"
         },
         "themeConfig": {
           "type": "string",
-          "description": "A JSON string containing configuration settings for the platform's theme, including colors, logos, and UI."
+          "description": "JSON string for colors, logos, etc."
         },
         "status": {
           "type": "string",
-          "description": "The current operational status of the platform (e.g., 'active', 'suspended')."
+          "description": "Current status.",
+          "enum": ["active", "suspended"]
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
         }
       },
       "required": [
@@ -76,41 +86,54 @@
       "$schema": "http://json-schema.org/draft-07/schema#",
       "title": "Listing",
       "type": "object",
-      "description": "Represents an item or service available for booking within a specific white-label platform.",
+      "description": "An item or service available for booking.",
       "properties": {
         "id": {
-          "type": "string",
-          "description": "Unique identifier for the Listing entity."
+          "type": "string"
         },
         "platformId": {
+          "type": "string"
+        },
+        "ownerId": {
           "type": "string",
-          "description": "Reference to the Platform this listing belongs to. (Relationship: Platform 1:N Listing)"
+          "description": "Denormalized owner UID for authorization."
         },
         "title": {
-          "type": "string",
-          "description": "The title of the listing (e.g., 'Grand Ballroom at Hotel Indah')."
+          "type": "string"
         },
         "description": {
-          "type": "string",
-          "description": "A detailed description of the listing."
+          "type": "string"
+        },
+        "location": {
+          "type": "string"
         },
         "pricePerDay": {
-          "type": "number",
-          "description": "The price per day for booking this listing."
+          "type": "number"
         },
-        "availabilityCalendar": {
+        "capacity": {
+          "type": "number"
+        },
+        "imageUrl": {
+          "type": "string"
+        },
+        "amenities": {
           "type": "array",
-          "description": "A list of dates when the listing is available, in 'YYYY-MM-DD' format.",
-          "items": {
-            "type": "string"
-          }
+          "items": { "type": "string" }
+        },
+        "status": {
+          "type": "string",
+          "enum": ["active", "inactive"]
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
         }
       },
       "required": [
         "id",
         "platformId",
+        "ownerId",
         "title",
-        "description",
         "pricePerDay"
       ]
     },
@@ -118,36 +141,30 @@
       "$schema": "http://json-schema.org/draft-07/schema#",
       "title": "Customer",
       "type": "object",
-      "description": "Represents an end-user who makes bookings on a specific white-label platform.",
+      "description": "An end-user of a specific platform.",
       "properties": {
         "id": {
-          "type": "string",
-          "description": "Unique identifier for the Customer entity."
+          "type": "string"
         },
         "platformId": {
+          "type": "string"
+        },
+        "ownerId": {
           "type": "string",
-          "description": "Reference to the Platform this customer is associated with. (Relationship: Platform 1:N Customer)"
+          "description": "Denormalized platform owner UID."
         },
         "name": {
-          "type": "string",
-          "description": "The full name of the customer."
+          "type": "string"
         },
         "email": {
           "type": "string",
-          "description": "The email address of the customer.",
           "format": "email"
-        },
-        "bookingIds": {
-          "type": "array",
-          "description": "An array of IDs referencing bookings made by this customer. (Relationship: Customer 1:N Booking)",
-          "items": {
-            "type": "string"
-          }
         }
       },
       "required": [
         "id",
         "platformId",
+        "ownerId",
         "name",
         "email"
       ]
@@ -156,46 +173,44 @@
       "$schema": "http://json-schema.org/draft-07/schema#",
       "title": "Booking",
       "type": "object",
-      "description": "Represents a specific booking made by a customer for a listing on a white-label platform.",
+      "description": "A reservation record.",
       "properties": {
         "id": {
-          "type": "string",
-          "description": "Unique identifier for the Booking entity."
+          "type": "string"
         },
         "platformId": {
+          "type": "string"
+        },
+        "ownerId": {
           "type": "string",
-          "description": "Reference to the Platform this booking belongs to. (Relationship: Platform 1:N Booking)"
+          "description": "Denormalized platform owner UID."
         },
         "listingId": {
-          "type": "string",
-          "description": "Reference to the Listing that is being booked. (Relationship: Listing 1:N Booking)"
+          "type": "string"
         },
         "customerId": {
-          "type": "string",
-          "description": "Reference to the Customer who made the booking. (Relationship: Customer 1:N Booking)"
+          "type": "string"
         },
         "startDate": {
           "type": "string",
-          "description": "The start date and time of the booking.",
           "format": "date-time"
         },
         "endDate": {
           "type": "string",
-          "description": "The end date and time of the booking.",
           "format": "date-time"
         },
         "totalPrice": {
-          "type": "number",
-          "description": "The total calculated price for the booking."
+          "type": "number"
         },
         "status": {
           "type": "string",
-          "description": "The current status of the booking (e.g., 'pending', 'confirmed', 'completed', 'cancelled')."
+          "enum": ["pending", "confirmed", "completed", "cancelled"]
         }
       },
       "required": [
         "id",
         "platformId",
+        "ownerId",
         "listingId",
         "customerId",
         "startDate",
@@ -220,39 +235,7 @@
           "schema": {
             "$ref": "#/backend/entities/User"
           },
-          "description": "Global user profiles containing general user information. The `role` field in this entity is primarily for informational display, while actual authorization for specific roles (platform_owner, super_admin) is managed by dedicated role collections (e.g., /platform_owners, /super_admins)."
-        }
-      },
-      {
-        "path": "/super_admins/{userId}",
-        "definition": {
-          "entityName": "User",
-          "schema": {
-            "$ref": "#/backend/entities/User"
-          },
-          "description": "Dedicated collection for users with 'super_admin' privileges. The existence of a document here grants global administrative access, adhering to the DBAC principle of 'Existence over Content' for authorization. Documents may be minimal (e.g., `{ id: userId }`).",
-          "params": [
-            {
-              "name": "userId",
-              "description": "The Firebase Authentication UID of the super administrator."
-            }
-          ]
-        }
-      },
-      {
-        "path": "/platform_owners/{userId}",
-        "definition": {
-          "entityName": "User",
-          "schema": {
-            "$ref": "#/backend/entities/User"
-          },
-          "description": "Dedicated collection for users authorized to create and manage 'Platform' instances. The existence of a document here grants 'platform owner' privileges, adhering to the DBAC principle of 'Existence over Content' for authorization. Documents may be minimal (e.g., `{ id: userId }`).",
-          "params": [
-            {
-              "name": "userId",
-              "description": "The Firebase Authentication UID of the platform owner."
-            }
-          ]
+          "description": "Global user profiles."
         }
       },
       {
@@ -262,13 +245,7 @@
           "schema": {
             "$ref": "#/backend/entities/Platform"
           },
-          "description": "Top-level collection for each white-label platform instance. Includes `ownerId` for direct authorization, enabling rules to verify ownership without `get()` calls to parent user documents.",
-          "params": [
-            {
-              "name": "platformId",
-              "description": "Unique identifier for the white-label booking platform."
-            }
-          ]
+          "description": "Top-level tenant roots."
         }
       },
       {
@@ -278,17 +255,7 @@
           "schema": {
             "$ref": "#/backend/entities/Listing"
           },
-          "description": "Listings available within a specific white-label platform. Includes denormalized `ownerId` (from the parent platform owner) for authorization independence. Public read access is intended for active platforms. (The Listing schema requires an 'ownerId' field for denormalization).",
-          "params": [
-            {
-              "name": "platformId",
-              "description": "The unique identifier of the parent platform."
-            },
-            {
-              "name": "listingId",
-              "description": "Unique identifier for the listing."
-            }
-          ]
+          "description": "Marketplace listings."
         }
       },
       {
@@ -298,17 +265,7 @@
           "schema": {
             "$ref": "#/backend/entities/Customer"
           },
-          "description": "End-user customer profiles associated with a specific white-label platform. Includes denormalized `ownerId` (from the parent platform owner) for authorization independence. (The Customer schema requires an 'ownerId' field for denormalization).",
-          "params": [
-            {
-              "name": "platformId",
-              "description": "The unique identifier of the parent platform."
-            },
-            {
-              "name": "customerId",
-              "description": "Unique identifier for the customer (typically their Firebase Authentication UID)."
-            }
-          ]
+          "description": "Tenant-specific customer profiles."
         }
       },
       {
@@ -318,20 +275,9 @@
           "schema": {
             "$ref": "#/backend/entities/Booking"
           },
-          "description": "Booking records for listings on a specific white-label platform. Includes denormalized `ownerId` (from the parent platform owner) for authorization independence, and `customerId` for customer-specific access. (The Booking schema requires an 'ownerId' field for denormalization).",
-          "params": [
-            {
-              "name": "platformId",
-              "description": "The unique identifier of the parent platform."
-            },
-            {
-              "name": "bookingId",
-              "description": "Unique identifier for the booking."
-            }
-          ]
+          "description": "Booking records."
         }
       }
-    ],
-    "reasoning": "The core of this design prioritizes Authorization Independence and supports Queries as Authorization Primitives (QAPs) through strategic denormalization and structural segregation. This approach ensures robust, debuggable security rules and scalable data access.\n\n**Authorization Independence via Denormalization:**\n1.  **Platform Ownership:** The `ownerId` is explicitly stored within each `/platforms/{platformId}` document. This enables security rules to directly verify `request.auth.uid == resource.data.ownerId` for any operation on a platform, eliminating the need for `get()` calls to a parent `User` document.\n2.  **Subcollection Ownership:** For all subcollections (`listings`, `customers`, `bookings`) nested under a `Platform`, the `ownerId` of the parent platform is denormalized and copied into every document (e.g., a document in `/platforms/{platformId}/listings/{listingId}` will contain `ownerId`). This is critical for atomic operations and simplifies security rules, allowing the platform owner to manage their resources by checking `request.auth.uid == resource.data.ownerId` directly on the document being accessed. This also ensures that `list` operations can be secured effectively without relying on `get()` calls.\n3.  **Customer-Specific Access:** For `Booking` entities, the `customerId` is included within the booking document. This allows individual customers to access their own bookings by verifying `request.auth.uid == resource.data.customerId`, further enhancing authorization independence.\n\n**Structural Segregation for Homogeneous Security Posture:**\n1.  **Role-Based Access:** Dedicated top-level collections like `/super_admins/{userId}` and `/platform_owners/{userId}` are used for global role-based authorization. This adheres to the DBAC principle of \"Existence over Content\", where the presence of a document signifies the role, allowing for efficient `exists()` checks in security rules rather than `get()` calls on a user profile to check a `role` field.\n2.  **Tenant Isolation:** Each white-label platform (`/platforms/{platformId}`) serves as a tenant root. Its subcollections (`listings`, `customers`, `bookings`) are designed to share a common security posture primarily managed by the platform's `ownerId`, or, for customer-specific data, by the `customerId`. This simplifies rule definitions by ensuring all documents within a given collection or subcollection follow similar access patterns.\n\n**Queries as Authorization Primitives (QAPs):**\n1.  **Secure `list` Operations for Owners:** The denormalization of `ownerId` into `Platform` and its nested entities allows platform owners to securely query for their owned resources using client-side `where` clauses, e.g., `db.collection('platforms').where('ownerId', '==', currentUser.uid)`. Security rules can then enforce that the `ownerId` in the query matches `request.auth.uid`.\n2.  **Secure `list` Operations for Customers:** The inclusion of `customerId` in `Booking` documents allows customers to securely list only their own bookings: `db.collection('platforms/{platformId}/bookings').where('customerId', '==', currentUser.uid)`.\n3.  **Public Data Access:** Publicly accessible data, such as `listings` for a given white-label platform, can be made available for `read` operations on the `/platforms/{platformId}/listings` collection, with rules ensuring the parent platform is active. This enables client applications (the white-label frontends) to query for listings without needing complex authorization filters on the client side, as security is enforced by the rules.\n\nThis architecture results in clear, robust, and easily debuggable security rules, minimal `get()` calls, and efficient data access for various user roles and scenarios."
+    ]
   }
 }
