@@ -2,18 +2,44 @@
 "use client";
 
 import { use, useState } from 'react';
-import { Search, Globe, MapPin, Star, Calendar, Users, Filter, Menu } from 'lucide-react';
+import { Search, Globe, MapPin, Star, Calendar, Users, Filter, Menu, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { MOCK_PLATFORMS, MOCK_LISTINGS } from '@/app/lib/mock-data';
 import Link from 'next/link';
+import { useDoc, useFirestore, useCollection, useMemoFirebase } from '@/firebase';
+import { doc, collection, query, where, orderBy } from 'firebase/firestore';
+import { BookingDialog } from '@/components/platform/BookingDialog';
 
 export default function PublicPlatformPage({ params }: { params: Promise<{ platformId: string }> }) {
   const { platformId } = use(params);
-  const platform = MOCK_PLATFORMS.find(p => p.id === platformId);
-  const listings = MOCK_LISTINGS.filter(l => l.platform_id === platformId);
+  const db = useFirestore();
+  
+  const platformRef = useMemoFirebase(() => {
+    if (!db || !platformId) return null;
+    return doc(db, 'platforms', platformId);
+  }, [db, platformId]);
+
+  const listingsQuery = useMemoFirebase(() => {
+    if (!db || !platformId) return null;
+    return query(
+      collection(db, 'platforms', platformId, 'listings'),
+      where('status', '==', 'active'),
+      orderBy('createdAt', 'desc')
+    );
+  }, [db, platformId]);
+
+  const { data: platform, isLoading: isPlatformLoading } = useDoc(platformRef);
+  const { data: listings, isLoading: isListingsLoading } = useCollection(listingsQuery);
+
+  if (isPlatformLoading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    );
+  }
 
   if (!platform) return <div className="p-20 text-center">404 - Platform Not Found</div>;
 
@@ -26,7 +52,7 @@ export default function PublicPlatformPage({ params }: { params: Promise<{ platf
             <div className="h-10 w-10 rounded-xl bg-primary flex items-center justify-center text-primary-foreground shadow-lg shadow-primary/20">
               <Globe className="h-6 w-6" />
             </div>
-            <span className="text-xl font-headline font-bold tracking-tight">{platform.platform_name}</span>
+            <span className="text-xl font-headline font-bold tracking-tight">{platform.name}</span>
           </Link>
 
           <div className="hidden lg:flex items-center gap-8 text-sm font-medium">
@@ -38,7 +64,9 @@ export default function PublicPlatformPage({ params }: { params: Promise<{ platf
           <div className="flex items-center gap-4">
             <Button variant="ghost" size="icon" className="lg:hidden"><Menu className="h-6 w-6" /></Button>
             <Button variant="outline" className="hidden sm:inline-flex">Sign In</Button>
-            <Button className="hidden sm:inline-flex">Start Booking</Button>
+            <Button className="hidden sm:inline-flex" onClick={() => {
+              document.getElementById('listings-grid')?.scrollIntoView({ behavior: 'smooth' });
+            }}>Start Booking</Button>
           </div>
         </div>
       </header>
@@ -48,7 +76,7 @@ export default function PublicPlatformPage({ params }: { params: Promise<{ platf
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto text-center mb-12">
             <h1 className="text-4xl lg:text-6xl font-headline font-bold mb-6">Find the Perfect Space</h1>
-            <p className="text-lg text-muted-foreground mb-8">Exclusive venues hand-picked by {platform.platform_name}.</p>
+            <p className="text-lg text-muted-foreground mb-8">Exclusive venues hand-picked by {platform.name}.</p>
           </div>
 
           <div className="max-w-5xl mx-auto bg-card border rounded-2xl shadow-xl p-4 md:p-6 grid grid-cols-1 md:grid-cols-4 gap-4">
@@ -83,52 +111,62 @@ export default function PublicPlatformPage({ params }: { params: Promise<{ platf
       </section>
 
       {/* Main Listings Grid */}
-      <main className="container mx-auto px-4 py-16">
+      <main id="listings-grid" className="container mx-auto px-4 py-16">
         <div className="flex justify-between items-center mb-8">
           <div>
             <h2 className="text-2xl font-headline font-bold">Recommended for You</h2>
-            <p className="text-muted-foreground">Top-rated venues in {platform.id === 'bali-weddings' ? 'Bali' : 'Jakarta'}.</p>
+            <p className="text-muted-foreground">Top-rated venues in {platform.niche || 'this region'}.</p>
           </div>
           <Button variant="outline" className="gap-2">
             <Filter className="h-4 w-4" /> Filters
           </Button>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-          {listings.map((listing) => (
-            <Card key={listing.id} className="border-none shadow-none group cursor-pointer overflow-hidden rounded-none bg-transparent">
-              <div className="relative aspect-[4/3] rounded-2xl overflow-hidden mb-3">
-                <img 
-                  src={listing.imageUrl} 
-                  alt={listing.title} 
-                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" 
-                />
-                <Button variant="ghost" size="icon" className="absolute top-3 right-3 bg-white/20 backdrop-blur-md rounded-full text-white hover:bg-white/40">
-                  <Star className="h-4 w-4" />
-                </Button>
-                <div className="absolute bottom-3 left-3">
-                  <Badge className="bg-white/90 text-foreground backdrop-blur-md font-bold">New Listing</Badge>
-                </div>
-              </div>
-              <div className="space-y-1 px-1">
-                <div className="flex justify-between items-start">
-                  <h3 className="font-bold text-lg leading-tight group-hover:text-primary transition-colors">{listing.title}</h3>
-                  <div className="flex items-center gap-1">
-                    <Star className="h-4 w-4 fill-primary text-primary" />
-                    <span className="text-sm font-bold">4.9</span>
+        {isListingsLoading ? (
+          <div className="flex justify-center py-20">
+            <Loader2 className="h-10 w-10 animate-spin text-primary" />
+          </div>
+        ) : !listings || listings.length === 0 ? (
+          <div className="py-20 text-center border-2 border-dashed rounded-2xl">
+            <Globe className="h-12 w-12 mx-auto text-muted-foreground opacity-20 mb-4" />
+            <p className="text-muted-foreground">No active listings found on this platform.</p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+            {listings.map((listing) => (
+              <BookingDialog key={listing.id} listing={listing} platform={platform}>
+                <Card className="border-none shadow-none group cursor-pointer overflow-hidden rounded-none bg-transparent">
+                  <div className="relative aspect-[4/3] rounded-2xl overflow-hidden mb-3">
+                    <img 
+                      src={listing.imageUrl || 'https://picsum.photos/seed/placeholder/800/600'} 
+                      alt={listing.title} 
+                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" 
+                    />
+                    <Button variant="ghost" size="icon" className="absolute top-3 right-3 bg-white/20 backdrop-blur-md rounded-full text-white hover:bg-white/40">
+                      <Star className="h-4 w-4" />
+                    </Button>
                   </div>
-                </div>
-                <p className="text-muted-foreground text-sm flex items-center gap-1">
-                  <MapPin className="h-3 w-3" /> {listing.location}
-                </p>
-                <div className="pt-2 flex items-baseline gap-1">
-                  <span className="text-lg font-bold">${listing.price_per_day}</span>
-                  <span className="text-sm text-muted-foreground">/ night</span>
-                </div>
-              </div>
-            </Card>
-          ))}
-        </div>
+                  <div className="space-y-1 px-1">
+                    <div className="flex justify-between items-start">
+                      <h3 className="font-bold text-lg leading-tight group-hover:text-primary transition-colors">{listing.title}</h3>
+                      <div className="flex items-center gap-1">
+                        <Star className="h-4 w-4 fill-primary text-primary" />
+                        <span className="text-sm font-bold">New</span>
+                      </div>
+                    </div>
+                    <p className="text-muted-foreground text-sm flex items-center gap-1">
+                      <MapPin className="h-3 w-3" /> {listing.location}
+                    </p>
+                    <div className="pt-2 flex items-baseline gap-1">
+                      <span className="text-lg font-bold">${listing.pricePerDay}</span>
+                      <span className="text-sm text-muted-foreground">/ night</span>
+                    </div>
+                  </div>
+                </Card>
+              </BookingDialog>
+            ))}
+          </div>
+        )}
       </main>
 
       <footer className="border-t py-16 bg-muted/20">
@@ -139,10 +177,10 @@ export default function PublicPlatformPage({ params }: { params: Promise<{ platf
                 <div className="h-8 w-8 rounded-lg bg-primary flex items-center justify-center text-primary-foreground">
                   <Globe className="h-4 w-4" />
                 </div>
-                <span className="text-lg font-headline font-bold">{platform.platform_name}</span>
+                <span className="text-lg font-headline font-bold">{platform.name}</span>
               </Link>
               <p className="text-sm text-muted-foreground leading-relaxed max-w-xs">
-                {platform.platform_name} is a curated marketplace for finding unique booking experiences. Powered by Platformify.
+                {platform.name} is a curated marketplace for finding unique booking experiences. Powered by Platformify.
               </p>
             </div>
             <div>
@@ -163,7 +201,7 @@ export default function PublicPlatformPage({ params }: { params: Promise<{ platf
             </div>
           </div>
           <div className="border-t pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-muted-foreground">
-            <p>© 2024 {platform.platform_name}. Built with Platformify.</p>
+            <p>© 2024 {platform.name}. Built with Platformify.</p>
             <div className="flex gap-6">
               <Link href="#" className="hover:text-primary">Privacy</Link>
               <Link href="#" className="hover:text-primary">Terms</Link>
