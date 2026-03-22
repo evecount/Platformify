@@ -32,7 +32,7 @@ export interface Listing {
   title: string;
   description: string;
   pricePerDay: number;
-  baseCost?: number; // Raw operational cost for margin guarding
+  baseCost: number; // Raw operational cost for margin guarding (Sister Schema Requirement)
   imageUrl?: string;
   location: string;
   capacity: number;
@@ -54,13 +54,19 @@ export interface Booking {
   startDate: string;
   endDate: string;
   totalPrice: number;
-  calculatedMargin?: number; // Recorded at booking for deep learning yield tracking
+  calculatedMargin: number; // Recorded at booking for deep learning yield tracking
   status: "pending" | "confirmed" | "completed" | "cancelled";
   createdAt: string;
   /**
-   * Purchase Signals: Conversion triggers and behavioral markers.
+   * Purchase Signals: Conversion triggers and behavioral markers (Sister Schema Requirement).
+   * Maps to the Behavioral Taxonomy (urgency, intent, sensitivity).
    */
-  purchaseContext?: Record<string, any>;
+  purchaseContext?: {
+    urgency?: 'low' | 'medium' | 'high';
+    intent?: 'gift' | 'business' | 'celebration' | 'utility';
+    sensitivity?: number;
+    [key: string]: any;
+  };
 }
 
 export interface Customer {
