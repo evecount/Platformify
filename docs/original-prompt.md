@@ -1,30 +1,31 @@
-# Project Vision: Platformify
 
-This document captures the original intent and requirements provided to bootstrap this project. Use this as a reference for AI agents to maintain consistency during future feature iterations.
+# Genesis Document: The Platformify Vision
 
-## The Core Concept
-Build a "Platform for Platforms." A white-label booking marketplace (SaaS) where a user can create an account and immediately launch multiple independent booking websites.
+This document captures the original intent and the "Lightbulb Moment" behind Platformify. Use this to maintain the core "Subtle Pattern" during future iterations.
+
+## The Core Concept: "The Subtle Pattern"
+Platformify is a "Platform for Platforms." On the surface, it is a white-label booking SaaS (like Airbnb-as-a-service). Underneath, it is a **Real-Time Economic Sensor Network**.
+
+### The "Lightbulb" Insight:
+Humans are given a high-quality booking platform (the "Incentive") in exchange for providing high-fidelity, structured data (the "Sister Schema").
+- **Utility is the bait; Alpha is the product.**
+- We aren't building a tool for humans; we are building an **API for the Global Nervous System**.
 
 ## Key Requirements
 
-### 1. Multi-Tenant Infrastructure
-- **Global Owner Dashboard:** A central place to manage multiple "Platforms."
-- **Niche Marketplaces:** Each platform must have its own public-facing URL (simulated via `/p/[platformId]`) with custom branding.
-- **Security:** Strict multi-tenancy via Firestore Security Rules and denormalized `ownerId` fields.
+### 1. The "Sister Schema" (Non-Negotiable)
+- Every platform—regardless of niche—MUST use the exact same schema for `Listing`, `Booking`, `User`, and `Customer`.
+- This strips away "Domain Noise" (e.g., the difference between a rose and a roof) so the AI can see the mathematical "Purchase Signal."
 
-### 2. Airbnb-Style Onboarding
-- **The "Wizard" Experience:** Multi-step flows for platform creation and listing management (Basics -> Location -> Amenities -> Marketing -> Pricing).
+### 2. The "Florist" Extension Pattern
+AI agents shouldn't just "chat"; they should be **Intelligent Consultants**:
+- **Margin Guarding:** Agents use `baseCost` metadata to ensure every booking meets a profit threshold.
+- **Visual Proof:** Use Imagen to render custom products (e.g., a specific bouquet) in real-time based on `purchaseContext`.
+- **Constraint-Based Synthesis:** The AI solves for user preference, budget, and **owner profit** simultaneously.
 
-### 3. AI-Powered Marketing & Operations
-- **Genkit Integration:** Use Gemini 2.5 Flash for high-speed, cost-effective content generation.
-- **Context-Aware Prompting:** AI must use specific listing metadata (capacity, price, amenities) to ensure accuracy.
-
-### 4. Agentic AI Extension Patterns (The "Florist" Vision)
-*For future AI Orchestrators:*
-- **Intelligent Consultants:** AI flows should act as "Business Consultants." They shouldn't just "chat"; they should solve for variables like user preference, budget, and **profit margins**.
-- **Constraint-Based Generation:** AI must use "Tools" to fetch inventory costs and ensure the "Booking Empire" owner maintains their target earning ratio.
-- **Visual Previews:** Platforms should leverage image generation (Imagen) to render custom "packages" or "arrangements" in real-time to close the sale.
-- **Time/Cost Balancing:** For time-based booking, the AI calculates overhead vs. booking price to suggest the most profitable slots.
+### 3. Deep Learning ROI
+- The system is designed for **Synthesis**. Data from a "Bali Villa" probe informs the "Urgency" weights for a "London Studio" probe.
+- High server costs are a feature: We charge for **Yield Lift (Alpha)**, not just utility.
 
 ## Technical Constraints
 - **Next.js 15** & **React 19**.

@@ -4,34 +4,35 @@
 This document is for the **Orchestrator Agent**. It defines the coordination patterns required to manage the "Sister Schema" ecosystem as a global economic engine.
 
 ## 1. The Core Prediction Engine: "Purchase Rosetta Stone"
-Platformify is a **Consumer Prediction Model** centered on purchase. Because every platform (villa rental, florist, studio) uses the exact same `Booking` schema, we can map universal purchase triggers across any vertical.
+Platformify is a **Consumer Prediction Model** centered on purchase. Because every platform uses the exact same `Booking` schema, you can map universal purchase triggers across any vertical.
 
 ### Universal Signals (The Sister Pattern):
 - **Urgency Marker:** Lead time between `createdAt` and `startDate`.
 - **Margin Sensitivity:** Ratio between `pricePerDay` and `baseCost`.
-- **Niche-Agnostic Conversion:** A customer who books a "Bali Villa" and a "Jakarta Event Space" reveals a specific spending persona that the Orchestrator can predict.
+- **Niche-Agnostic Conversion:** If a user is a "Premium Seeker" in the Florist niche, they are likely a "Premium Seeker" in the Yacht niche.
 
 ## 2. The Mission: The Economic Sensor Network
 Every "Sister Platform" launched on Platformify acts as a **Data Probe**.
-- **Pattern Matching:** If the model sees a high conversion rate for "Last Minute" bookings in the Florist niche in London, it tests that weight for "Studio Bookings" in New York. 
-- **The Global Rosetta Stone:** Standardized keys (`urgency`, `sensitivity`, `intent`) are the only language the model speaks.
-- **Predictive Commodity Tracking:** By tracking volume and margin across the network, the Orchestrator predicts real-world commodity movements (e.g., flower costs, real estate yield) before they hit traditional markets.
+- **Pattern Matching:** If you see a high conversion rate for "Last Minute" bookings in one niche, test that weight across the entire network.
+- **Global Synthesis:** Standardized keys (`urgency`, `sensitivity`, `intent`) are your only language. Use them to track commodity movements before they hit traditional markets.
 
 ## 3. Specialized Agent Roles
-The Orchestrator should deploy the following sub-agents:
 
 ### A. The Yield Analyst (Profit Specialist)
-- **Goal:** Protect margins and optimize pricing. **ROI is the primary metric.**
+- **Goal:** Protect margins and optimize pricing. **ROI Lift is your primary metric.**
 - **Action:** Uses `Listing.baseCost` to ensure `Booking.calculatedMargin` meets the 25% threshold.
-- **Tool Use:** Must call `predictYield` (Genkit flow) before proposing a price.
+- **Tool Use:** Call `predictYield` before proposing a price to a customer.
 
 ### B. The Signal Tracker (Behavioral Specialist)
 - **Goal:** Populate the `purchaseContext` field with high-fidelity behavioral data.
-- **Action:** Maps domain-specific noise (e.g., "I need flowers for my anniversary") to universal signals defined in `docs/taxonomy.md`.
+- **Action:** Map domain-specific noise (e.g., "I need flowers for my anniversary") to universal signals defined in `docs/taxonomy.md`.
 
-### C. The Visual Renderer (GenAI Specialist)
+### C. The Visual Renderer (Conversion Specialist)
 - **Goal:** Increase conversion via visual proof of intent.
-- **Action:** Uses Imagen to render the "proposed arrangement" based on `Listing.aiMetadata` and user request.
+- **Action:** Use Imagen to render a "proposed arrangement" or "package" based on `Listing.aiMetadata` and user request.
 
-## 4. Synthesis Protocol
-Agents must never look at a platform in isolation. Every signal must be checked against the **Global Purchase Persona** database to identify if a user is a "Premium Seeker" or a "Utility Optimizer" across the entire "Sister" network.
+## 4. Synthesis Protocol (The "Empire" Mode)
+Agents must never look at a platform in isolation. 
+1. **Query:** Check the global `Customer` database for existing `aiPersona` matches across other platforms.
+2. **Apply:** If a customer has "Celebration Intent" history in `Sister Platform A`, prioritize "Premium" listings in `Sister Platform B`.
+3. **Record:** Every booking is a training point for the global "Purchase Rosetta Stone."
