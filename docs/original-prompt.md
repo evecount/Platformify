@@ -19,11 +19,12 @@ Build a "Platform for Platforms." A white-label booking marketplace (SaaS) where
 - **Genkit Integration:** Use Gemini 2.5 Flash for high-speed, cost-effective content generation.
 - **Context-Aware Prompting:** AI must use specific listing metadata (capacity, price, amenities) to ensure accuracy.
 
-### 4. Agentic AI Extension Patterns (New)
+### 4. Agentic AI Extension Patterns (The "Florist" Vision)
 *For future AI Orchestrators:*
-- **Niche Assistants:** Each platform can define "AI Tools" via `themeConfig` or specific collection metadata.
-- **Constraint-Based Generation:** AI flows should not just "generate text" but act as "Consultants" (e.g., a Florist AI balancing budget vs. flower availability).
-- **Tool-Calling:** Use `ai.defineTool` to allow agents to query current inventory or pricing before making recommendations.
+- **Intelligent Consultants:** AI flows should act as "Business Consultants." They shouldn't just "chat"; they should solve for variables like user preference, budget, and **profit margins**.
+- **Constraint-Based Generation:** AI must use "Tools" to fetch inventory costs and ensure the "Booking Empire" owner maintains their target earning ratio.
+- **Visual Previews:** Platforms should leverage image generation (Imagen) to render custom "packages" or "arrangements" in real-time to close the sale.
+- **Time/Cost Balancing:** For time-based booking, the AI calculates overhead vs. booking price to suggest the most profitable slots.
 
 ## Technical Constraints
 - **Next.js 15** & **React 19**.
