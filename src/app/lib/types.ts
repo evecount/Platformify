@@ -42,6 +42,11 @@ export interface Listing {
   uniqueSellingPoints: string[];
   status: "active" | "inactive";
   createdAt: string;
+  /**
+   * AI Metadata: Used for the 'Booking Agnostic Consumer Prediction Model'.
+   * Stores high-dimensional features like 'vibe', 'luxury_index', or 'seasonal_demand'.
+   */
+  aiMetadata?: Record<string, any>;
 }
 
 export interface Booking {
@@ -56,6 +61,11 @@ export interface Booking {
   calculatedMargin?: number; // Added for deep learning yield tracking
   status: "pending" | "confirmed" | "completed" | "cancelled";
   createdAt: string;
+  /**
+   * Purchase Signals: Stores conversion triggers, lead times, and behavioral markers
+   * that feed the cross-platform prediction engine.
+   */
+  purchaseContext?: Record<string, any>;
 }
 
 export interface Customer {

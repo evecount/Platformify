@@ -1,49 +1,31 @@
 # Platformify 🚀
 
-Platformify is a robust, multi-tenant white-label booking marketplace engine. It allows "Platform Owners" to launch their own niche booking sites (e.g., "Bali Luxury Villas" or "London Creative Studios") with zero code, full branding control, and AI-powered listing management.
+Platformify is a robust, multi-tenant **Booking Agnostic Consumer Prediction Model**. It allows "Platform Owners" to launch niche marketplaces while providing a "Deep Learning" engine that understands purchase intent across any vertical.
 
-## 🏗️ Architecture & Multi-Tenancy
+## 🏗️ Architecture & Sister Schemas
 
 The platform uses a **Decentralized Access Control (DBAC)** model within Firebase:
-- **Global Auth:** Users are managed via Firebase Authentication.
-- **Top-Level Tenants:** Each marketplace is a document in the `/platforms` collection.
-- **Standardized "Sister Schemas":** Every tenant uses the same high-level schema for Listings and Bookings. This creates a massive, interoperable dataset that allows the platform to provide "Deep Learning" insights across all niche markets.
-- **Isolated Data:** Data is stored in sub-collections under each platform, ensuring strict multi-tenant boundaries enforced by Firestore Security Rules.
+- **Standardized "Sister Schemas":** Every tenant (whether booking villas, florists, or studios) uses the exact same data structure for Listings and Bookings.
+- **The Prediction Engine:** Because the data is structured and consistent across all "Sister" platforms, the AI can perform cross-tenant analysis to predict purchase behavior and optimize yield.
+- **Isolated Data:** Strict multi-tenant boundaries are enforced by Firestore Security Rules using denormalized `ownerId` and `platformId` fields.
 
 ## 🛠️ Tech Stack
 
 - **Framework:** Next.js 15 (App Router)
 - **UI:** React 19, ShadCN UI, Tailwind CSS
-- **Icons:** Lucide React
 - **Backend:** Firebase (Firestore, Authentication, App Hosting)
-- **AI:** Genkit (Google Gemini 2.5 Flash) for automated listing descriptions
-- **State/Data Fetching:** Custom Firebase Hooks (`useCollection`, `useDoc`, `useUser`) with real-time sync.
+- **AI:** Genkit (Google Gemini 2.5 Flash) for automated listing descriptions and agentic orchestration.
 
-## 🤖 AI Features
+## 🤖 AI Vision: The "Florist" Pattern
 
-Platformify integrates **Genkit** to provide an "AI Listing Assistant" and a framework for agentic orchestrators. By leveraging the standardized "Sister Schemas," AI agents can perform:
-- **Yield Optimization:** Predictive pricing based on cross-platform data.
-- **Profit Protection:** Ensuring listings maintain target margins against raw costs.
-- **Generative Previews:** Using Imagen to render custom booking arrangements in real-time.
-
-## 🚀 Getting Started
-
-1. **Firebase Setup:**
-   - Create a project in the [Firebase Console](https://console.firebase.google.com/).
-   - Enable **Firestore** and **Authentication** (Email/Password + Anonymous).
-   - Deploy security rules located in `firestore.rules`.
-2. **Environment Variables:**
-   - Populate `src/firebase/config.ts` with your client-side config.
-   - Set `GEMINI_API_KEY` for Genkit functionality.
-3. **Run Locally:**
-   ```bash
-   npm install
-   npm run dev
-   ```
+Platformify goes beyond "Chatbots." It enables **Intelligent Consultants** that:
+- **Protect Profit Margins:** AI agents use tools to fetch `baseCost` metadata, ensuring listings maintain target margins.
+- **Generative Previews:** Uses Imagen to render custom products or arrangements in real-time.
+- **Yield Optimization:** Uses the cross-platform structured dataset to predict the most profitable pricing for any given time-slot.
 
 ## 📂 Documentation
 
-Detailed schema and vision documents can be found in the `/docs` folder:
-- `backend.json`: The source of truth for the database schema.
-- `ai-orchestration-guide.md`: Blueprint for building "Deep Learning" agentic extensions.
-- `original-prompt.md`: The architectural vision used to bootstrap this project.
+Detailed blueprints for AI agents and the data engine can be found in:
+- `docs/backend.json`: The "Sister Schema" source of truth.
+- `docs/ai-orchestration-guide.md`: Blueprint for building the Prediction Model extensions.
+- `docs/original-prompt.md`: The architectural vision.

@@ -1,37 +1,30 @@
-# AI Orchestration Guide: Building Niche Assistants
+# AI Orchestration Guide: The Sister Schema Prediction Model
 
-This guide is for AI Agents/Orchestrators looking to extend Platformify with intelligent, niche-specific booking assistants.
+This guide outlines how Platformify functions as a **Booking Agnostic Consumer Prediction Model**.
 
 ## The "Sister Schema" Architecture
-Platformify is designed around the concept of **Sister Schemas**. While each platform is a separate tenant with its own brand and niche, they all operate under a standardized data contract (`Listing`, `Booking`, `Customer`). 
+Platformify is designed around standardized data contracts. While each platform is a separate tenant with its own brand, they all operate under the same high-level schema (`Listing`, `Booking`, `Customer`).
 
-### Why this matters for Deep Learning:
-- **Standardized Data Lakes:** Because every "Bali Villa" and "London Studio" follows the same schema, the platform can aggregate anonymized data to identify global patterns in consumer behavior.
-- **Cross-Tenant Intelligence:** An AI agent trained on one tenant's successful booking patterns can offer "Best Practice" recommendations to a new tenant (e.g., "In the 'Villa' niche, listings with 5+ amenities convert 30% better").
-- **Predictive Yield Models:** The "Sister" nature of these schemas allows for a massive dataset where time-based performance can be predicted across similar (but independent) markets.
+### Why this matters for Purchase Prediction:
+- **Niche-Agnostic Patterns:** Because every listing follows the same structure, AI agents can identify global purchase triggers. For example, "listings with high 'amenity density' convert 20% faster regardless of whether they are yachts or villas."
+- **Structured Data Lakes:** The platform aggregates anonymized data from thousands of "Sisters" to build a predictive model of consumer behavior.
+- **Deep Learning for Yield:** Agents analyze the `calculatedMargin` and `purchaseContext` across platforms to suggest the "Mathematical Peak" for pricing.
 
-## The "Florist" Pattern: Intent to Structured Output
+## The "Purchase Signal" Pattern
 
-When building an assistant like the "Florist Bouquet Builder," follow this Genkit-centric pattern:
+When building an assistant, the goal isn't just to complete a booking—it's to capture data for the prediction engine.
 
-### 1. Define the Business Logic (The "Constraints")
-Don't just ask the AI to "suggest a bouquet." Pass it the hard constraints as context:
-- **Inventory:** What items are in stock? (Fetch from `/platforms/{pId}/listings`)
-- **Margins:** What is the raw cost vs. retail price?
-- **Seasonality:** Is the item currently available?
+### 1. Contextual Capture
+When a user interacts with an AI assistant (e.g., the Florist or the Travel Guide), the agent should store "Hidden Variables" in the `purchaseContext` field of the booking:
+- **Intent Type:** (e.g., "Gift-giving", "Urgent stay", "Business expansion")
+- **Budget Sensitivity:** How many options did the user reject based on price?
+- **Visual Preference:** Which Imagen-generated previews led to a click?
 
-### 2. Implementation Strategy: The "Intelligent Consultant"
-- **Tools over Prompts:** Use `ai.defineTool` to give the AI access to the `listings` collection. The AI should "lookup" current prices and availability before suggesting a package.
-- **Profit Protection:** In the system prompt, instruct the AI: "Your goal is to maximize customer satisfaction while maintaining a minimum 30% profit margin based on the provided raw costs."
-- **Visual Validation:** Use `imagen-4.0` (Text-to-Image) to render a preview of the custom "product" (e.g., a specific bouquet arrangement or a room setup) to increase conversion.
+### 2. Profit & Yield Protection
+- **Constraint-Based Consulting:** Agents must use tools to check `baseCost` and ensure any "Custom Bouquet" or "Event Package" maintains the Platform Owner's target earning ratio.
+- **Dynamic Yield:** The AI should act as a consultant, informing the user: "Based on cross-platform demand patterns, this time slot is highly sought after; I recommend a 15% yield premium."
 
-### 3. Time-Based Consulting & Yield Optimization
-For service-based platforms (e.g., "Venue Hire"), the "Cost" isn't just physical items—it's **overhead per hour**. 
-- **Dynamic Pricing:** The AI should calculate if a specific booking time-slot is "profitable" considering staff costs, utility overheads, and historical demand.
-- **Deep Learning Loop:** As the platform collects data across all "Sister" platforms, agents analyze aggregate `/bookings` to identify high-traffic windows and automatically suggest higher "Yield" prices for those peak times globally.
-
-## Recommended Tools for Agents
-- **Inventory Check:** Querying `/platforms/{pId}/listings`.
-- **Margin Calculator:** Adjusting `totalPrice` based on `baseCost` metadata to ensure profitability.
-- **Visualizer:** Calling `ai.generate` with the `googleai/imagen-4.0` model to create a realistic mock-up of the service/product.
-- **Yield Analyst:** Aggregating historical booking data across "Sister Schemas" to predict optimal pricing for future time-slots.
+## Recommended Tools for Prediction Agents
+- **Yield Analyst:** Aggregates historical `/bookings` across "Sister Schemas" to predict conversion probabilities.
+- **Margin Guard:** Validates that `totalPrice - baseCost` meets the required profitability threshold before confirming a proposal.
+- **Signal Tracker:** Writes behavioral data into `aiMetadata` to refine the global consumer model.
