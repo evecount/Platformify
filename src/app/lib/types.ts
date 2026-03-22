@@ -16,19 +16,23 @@ export interface PlatformTheme {
 
 export interface Platform {
   id: string;
-  owner_uid: string;
-  platform_name: string;
-  custom_domain: string;
-  theme_config: PlatformTheme;
+  ownerId: string;
+  name: string;
+  customDomain: string;
+  themeConfig: string; // JSON string
   status: "active" | "suspended";
+  niche?: string;
+  createdAt: string;
 }
 
 export interface Listing {
   id: string;
-  platform_id: string;
+  platformId: string;
+  ownerId: string;
   title: string;
   description: string;
-  price_per_day: number;
+  pricePerDay: number;
+  baseCost?: number; // Added for margin tracking
   imageUrl?: string;
   location: string;
   keyFeatures: string[];
@@ -36,24 +40,29 @@ export interface Listing {
   amenities: string[];
   nearbyAttractions: string[];
   uniqueSellingPoints: string[];
+  status: "active" | "inactive";
+  createdAt: string;
 }
 
 export interface Booking {
   id: string;
-  platform_id: string;
-  listing_id: string;
-  customer_id: string;
-  customer_email: string;
-  start_date: string;
-  end_date: string;
-  total_price: number;
-  status: "pending" | "confirmed" | "completed";
+  platformId: string;
+  ownerId: string;
+  listingId: string;
+  customerId: string;
+  startDate: string;
+  endDate: string;
+  totalPrice: number;
+  calculatedMargin?: number; // Added for deep learning yield tracking
+  status: "pending" | "confirmed" | "completed" | "cancelled";
+  createdAt: string;
 }
 
 export interface Customer {
   id: string;
-  platform_id: string;
+  platformId: string;
+  ownerId: string;
   name: string;
   email: string;
-  booking_history: string[];
+  booking_history?: string[];
 }

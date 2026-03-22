@@ -17,7 +17,12 @@ Don't just ask the AI to "suggest a bouquet." Pass it the hard constraints as co
 - **Profit Protection:** In the system prompt, instruct the AI: "Your goal is to maximize customer satisfaction while maintaining a minimum 30% profit margin based on the provided raw costs."
 - **Visual Validation:** Use `imagen-4.0` (Text-to-Image) to render a preview of the custom "product" (e.g., a specific bouquet arrangement or a room setup) to increase conversion.
 
-### 3. Example Schema for a Niche Assistant
+### 3. Time-Based Consulting & Yield Optimization
+For service-based platforms (e.g., "Venue Hire"), the "Cost" isn't just physical items—it's **overhead per hour**. 
+- **Dynamic Pricing:** The AI should calculate if a specific booking time-slot is "profitable" considering staff costs, utility overheads, and historical demand.
+- **Deep Learning Loop:** As the platform collects data, agents should analyze `/bookings` to identify high-traffic windows and automatically suggest higher "Yield" prices for those peak times.
+
+### 4. Example Schema for a Niche Assistant
 ```typescript
 const RecommendationSchema = z.object({
   items: z.array(z.object({
@@ -32,15 +37,8 @@ const RecommendationSchema = z.object({
 });
 ```
 
-### 4. Multi-Tenant AI
-When an agent creates a new AI flow, it must be scoped to the `platformId`. 
-- **System Prompt:** "You are the expert consultant for [PlatformName], specializing in [Niche]. You have access to our catalog and cost basis."
-- **Context:** Fetch the `Platform` document and its associated inventory metadata before calling the LLM.
-
 ## Recommended Tools for Agents
 - **Inventory Check:** Querying `/platforms/{pId}/listings`.
-- **Pricing Calculator:** Adjusting `totalPrice` based on dynamic variables (e.g., "urgent delivery fee").
+- **Margin Calculator:** Adjusting `totalPrice` based on `baseCost` metadata to ensure profitability.
 - **Visualizer:** Calling `ai.generate` with the `googleai/imagen-4.0` model to create a realistic mock-up of the service/product.
-
-## Time-Based Consulting
-For service-based platforms (e.g., "Venue Hire"), the "Cost" isn't just physical items—it's **overhead per hour**. The AI should calculate if a specific booking time-slot is "profitable" considering staff costs and utility overheads before recommending it to the customer.
+- **Yield Analyst:** Aggregating historical booking data to predict optimal pricing for future time-slots.

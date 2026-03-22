@@ -88,46 +88,19 @@
       "type": "object",
       "description": "An item or service available for booking.",
       "properties": {
-        "id": {
-          "type": "string"
-        },
-        "platformId": {
-          "type": "string"
-        },
-        "ownerId": {
-          "type": "string",
-          "description": "Denormalized owner UID for authorization."
-        },
-        "title": {
-          "type": "string"
-        },
-        "description": {
-          "type": "string"
-        },
-        "location": {
-          "type": "string"
-        },
-        "pricePerDay": {
-          "type": "number"
-        },
-        "capacity": {
-          "type": "number"
-        },
-        "imageUrl": {
-          "type": "string"
-        },
-        "amenities": {
-          "type": "array",
-          "items": { "type": "string" }
-        },
-        "status": {
-          "type": "string",
-          "enum": ["active", "inactive"]
-        },
-        "createdAt": {
-          "type": "string",
-          "format": "date-time"
-        }
+        "id": { "type": "string" },
+        "platformId": { "type": "string" },
+        "ownerId": { "type": "string" },
+        "title": { "type": "string" },
+        "description": { "type": "string" },
+        "location": { "type": "string" },
+        "pricePerDay": { "type": "number" },
+        "baseCost": { "type": "number", "description": "Raw cost for the provider (for margin calculations)." },
+        "capacity": { "type": "number" },
+        "imageUrl": { "type": "string" },
+        "amenities": { "type": "array", "items": { "type": "string" } },
+        "status": { "type": "string", "enum": ["active", "inactive"] },
+        "createdAt": { "type": "string", "format": "date-time" }
       },
       "required": [
         "id",
@@ -143,23 +116,11 @@
       "type": "object",
       "description": "An end-user of a specific platform.",
       "properties": {
-        "id": {
-          "type": "string"
-        },
-        "platformId": {
-          "type": "string"
-        },
-        "ownerId": {
-          "type": "string",
-          "description": "Denormalized platform owner UID."
-        },
-        "name": {
-          "type": "string"
-        },
-        "email": {
-          "type": "string",
-          "format": "email"
-        }
+        "id": { "type": "string" },
+        "platformId": { "type": "string" },
+        "ownerId": { "type": "string" },
+        "name": { "type": "string" },
+        "email": { "type": "string", "format": "email" }
       },
       "required": [
         "id",
@@ -175,37 +136,16 @@
       "type": "object",
       "description": "A reservation record.",
       "properties": {
-        "id": {
-          "type": "string"
-        },
-        "platformId": {
-          "type": "string"
-        },
-        "ownerId": {
-          "type": "string",
-          "description": "Denormalized platform owner UID."
-        },
-        "listingId": {
-          "type": "string"
-        },
-        "customerId": {
-          "type": "string"
-        },
-        "startDate": {
-          "type": "string",
-          "format": "date-time"
-        },
-        "endDate": {
-          "type": "string",
-          "format": "date-time"
-        },
-        "totalPrice": {
-          "type": "number"
-        },
-        "status": {
-          "type": "string",
-          "enum": ["pending", "confirmed", "completed", "cancelled"]
-        }
+        "id": { "type": "string" },
+        "platformId": { "type": "string" },
+        "ownerId": { "type": "string" },
+        "listingId": { "type": "string" },
+        "customerId": { "type": "string" },
+        "startDate": { "type": "string", "format": "date-time" },
+        "endDate": { "type": "string", "format": "date-time" },
+        "totalPrice": { "type": "number" },
+        "calculatedMargin": { "type": "number", "description": "Margin recorded at time of booking." },
+        "status": { "type": "string", "enum": ["pending", "confirmed", "completed", "cancelled"] }
       },
       "required": [
         "id",
@@ -227,57 +167,25 @@
     ]
   },
   "firestore": {
-    "structure": [
-      {
-        "path": "/users/{userId}",
-        "definition": {
-          "entityName": "User",
-          "schema": {
-            "$ref": "#/backend/entities/User"
-          },
-          "description": "Global user profiles."
-        }
-      },
-      {
-        "path": "/platforms/{platformId}",
-        "definition": {
-          "entityName": "Platform",
-          "schema": {
-            "$ref": "#/backend/entities/Platform"
-          },
-          "description": "Top-level tenant roots."
-        }
-      },
-      {
-        "path": "/platforms/{platformId}/listings/{listingId}",
-        "definition": {
-          "entityName": "Listing",
-          "schema": {
-            "$ref": "#/backend/entities/Listing"
-          },
-          "description": "Marketplace listings."
-        }
-      },
-      {
-        "path": "/platforms/{platformId}/customers/{customerId}",
-        "definition": {
-          "entityName": "Customer",
-          "schema": {
-            "$ref": "#/backend/entities/Customer"
-          },
-          "description": "Tenant-specific customer profiles."
-        }
-      },
-      {
-        "path": "/platforms/{platformId}/bookings/{bookingId}",
-        "definition": {
-          "entityName": "Booking",
-          "schema": {
-            "$ref": "#/backend/entities/Booking"
-          },
-          "description": "Booking records."
-        }
-      }
-    ]
+    "/users/{userId}": {
+      "schema": { "$ref": "#/backend/entities/User" },
+      "description": "Global user profiles."
+    },
+    "/platforms/{platformId}": {
+      "schema": { "$ref": "#/backend/entities/Platform" },
+      "description": "Top-level tenant roots."
+    },
+    "/platforms/{platformId}/listings/{listingId}": {
+      "schema": { "$ref": "#/backend/entities/Listing" },
+      "description": "Marketplace listings."
+    },
+    "/platforms/{platformId}/customers/{customerId}": {
+      "schema": { "$ref": "#/backend/entities/Customer" },
+      "description": "Tenant-specific customer profiles."
+    },
+    "/platforms/{platformId}/bookings/{bookingId}": {
+      "schema": { "$ref": "#/backend/entities/Booking" },
+      "description": "Booking records."
+    }
   }
 }
