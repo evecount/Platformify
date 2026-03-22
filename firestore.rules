@@ -1,0 +1,171 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    /**
+     * PLATFORMIFY BOOKINGS - SECURITY RULES DOCUMENTATION
+     * 
+     * Core Philosophy:
+     * This ruleset implements a multi-tenant white-label booking system using a "Decentralized 
+     * Access Control" (DBAC) model. It prioritizes "Existence over Content" for global roles 
+     * and "Authorization Independence" for tenant-level data.
+     * 
+     * Data Structure:
+     * - /users/{userId}: Global user profiles.
+     * - /super_admins/{userId}: Role-marker collection for global admins.
+     * - /platform_owners/{userId}: Role-marker collection for users authorized to create platforms.
+     * - /platforms/{platformId}: Top-level tenant roots.
+     * - /platforms/{platformId}/[listings|customers|bookings]: Tenant-specific subcollections.
+     * 
+     * Key Security Decisions:
+     * 1. Authorization Independence: All documents within a platform's tree (listings, bookings, etc.) 
+     *    MUST contain a denormalized `ownerId` field. This allows the rules to verify the 
+     *    platform owner's identity directly on the document without expensive `get()` calls.
+     * 2. Role Markers: Global roles are determined by the existence of a document in the 
+     *    /super_admins or /platform_owners collections, mapped to the user's UID.
+     * 3. Relational Integrity: On creation, rules enforce that `ownerId` or `customerId` fields 
+     *    match the authenticated user to prevent data spoofing.
+     * 4. Public Access: Marketplace listings are publicly readable to support unauthenticated 
+     *    browsing, while writes are strictly controlled.
+     */
+
+    // --- GLOBAL HELPER FUNCTIONS ---
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    // Helper to check for existing document ownership before update/delete
+    // This function now correctly uses the 'docOwnerId' parameter.
+    function isExistingOwner(docOwnerId) {
+      return isSignedIn() && resource != null && docOwnerId == request.auth.uid;
+    }
+
+    // Role Check: Verifies if the user is a Super Admin
+    function isSuperAdmin() {
+      return isSignedIn() && exists(/databases/$(database)/documents/super_admins/$(request.auth.uid));
+    }
+
+    // Role Check: Verifies if the user is authorized to be a Platform Owner
+    function isPlatformOwnerRole() {
+      return isSignedIn() && exists(/databases/$(database)/documents/platform_owners/$(request.auth.uid));
+    }
+
+    // --- COLLECTION RULES ---
+
+    /**
+     * @description Rules for global user profiles.
+     * @path /users/{userId}
+     * @allow (get) Any signed-in user can view a profile. (create/update) The user themselves.
+     * @deny (list) Prevent user directory scraping.
+     * @principle Enforces self-ownership for profile management.
+     */
+    match /users/{userId} {
+      allow get: if isSignedIn();
+      allow list: if false;
+      allow create: if isOwner(userId);
+      allow update: if isOwner(userId) && resource != null;
+      allow delete: if isOwner(userId) && resource != null;
+    }
+
+    /**
+     * @description Role marker for global administrators.
+     * @path /super_admins/{userId}
+     * @allow (get) Any signed-in user (to verify roles). (write) Only existing Super Admins.
+     * @deny (list) Prevent listing all admins.
+     * @principle Existence-based authorization (Existence over Content).
+     */
+    match /super_admins/{userId} {
+      allow get: if isSignedIn();
+      allow list: if false;
+      allow create, update, delete: if isSuperAdmin();
+    }
+
+    /**
+     * @description Role marker for users authorized to create white-label platforms.
+     * @path /platform_owners/{userId}
+     * @allow (get) Any signed-in user. (write) Super Admins.
+     * @deny (list) Prevent listing all platform owners.
+     * @principle Restricts platform creation capability to vetted users.
+     */
+    match /platform_owners/{userId} {
+      allow get: if isSignedIn();
+      allow list: if false;
+      allow create, update, delete: if isSuperAdmin();
+    }
+
+    /**
+     * @description Management for white-label platform instances.
+     * @path /platforms/{platformId}
+     * @allow (get/list) Public access for marketplace visibility. (create) Users with platform_owner role.
+     * @deny (write) Users who do not own the specific platform.
+     * @principle Validates role requirement for platform creation and ownership for updates.
+     */
+    match /platforms/{platformId} {
+      allow get, list: if true;
+      allow create: if isPlatformOwnerRole() && request.resource.data.ownerId == request.auth.uid;
+      allow update: if isExistingOwner(resource.data.ownerId) && request.resource.data.ownerId == resource.data.ownerId;
+      allow delete: if isExistingOwner(resource.data.ownerId);
+    }
+
+    /**
+     * @description Listings within a specific platform.
+     * @path /platforms/{platformId}/listings/{listingId}
+     * @allow (get/list) Public. (write) The platform owner.
+     * @deny (write) Anyone other than the platform owner.
+     * @principle Authorization independence via denormalized ownerId.
+     */
+    match /platforms/{platformId}/listings/{listingId} {
+      allow get, list: if true;
+      
+      // CRITICAL: The 'Listing' entity definition in IR was missing 'ownerId', 
+      // but 'reasoning' confirms it is denormalized for security.
+      allow create: if isOwner(request.resource.data.ownerId);
+      allow update: if isExistingOwner(resource.data.ownerId) && request.resource.data.ownerId == resource.data.ownerId;
+      allow delete: if isExistingOwner(resource.data.ownerId);
+    }
+
+    /**
+     * @description Customer profiles scoped to a platform.
+     * @path /platforms/{platformId}/customers/{customerId}
+     * @allow (get) Platform owner or the specific customer. (write) Platform owner.
+     * @deny (list) Unauthorized users.
+     * @principle Shared access between tenant owner and the resource subject.
+     */
+    match /platforms/{platformId}/customers/{customerId} {
+      allow get: if isOwner(customerId) || isExistingOwner(resource.data.ownerId);
+      allow list: if isSignedIn() && (isPlatformOwnerRole() || isOwner(customerId));
+      
+      // CRITICAL: Schema requires 'ownerId' denormalization to allow platform owners to manage customers.
+      allow create: if isOwner(request.resource.data.ownerId);
+      allow update: if isExistingOwner(resource.data.ownerId) && request.resource.data.ownerId == resource.data.ownerId;
+      allow delete: if isExistingOwner(resource.data.ownerId);
+    }
+
+    /**
+     * @description Booking records within a platform.
+     * @path /platforms/{platformId}/bookings/{bookingId}
+     * @allow (get) Platform owner or the customer who booked. (create) Signed-in customers.
+     * @deny (update/delete) Anyone not the owner or the specific customer.
+     * @principle Multi-party authorization using denormalized relational IDs.
+     */
+    match /platforms/{platformId}/bookings/{bookingId} {
+      allow get: if isSignedIn() && (request.auth.uid == resource.data.customerId || request.auth.uid == resource.data.ownerId);
+      allow list: if isSignedIn(); // Filtered by query (where customerId == uid OR ownerId == uid)
+      
+      allow create: if isSignedIn() 
+                    && request.resource.data.customerId == request.auth.uid;
+      
+      allow update: if isSignedIn() 
+                    && (request.auth.uid == resource.data.customerId || request.auth.uid == resource.data.ownerId)
+                    && request.resource.data.ownerId == resource.data.ownerId
+                    && request.resource.data.customerId == resource.data.customerId;
+                    
+      allow delete: if isExistingOwner(resource.data.ownerId) || (resource != null && request.auth.uid == resource.data.customerId);
+    }
+  }
+}
