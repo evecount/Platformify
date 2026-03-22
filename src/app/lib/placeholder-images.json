@@ -1,0 +1,35 @@
+
+{
+  "placeholderImages": [
+    {
+      "id": "venue-1",
+      "description": "Luxurious villa with pool",
+      "imageUrl": "https://picsum.photos/seed/v1/800/600",
+      "imageHint": "luxury villa"
+    },
+    {
+      "id": "venue-2",
+      "description": "Modern event space with city view",
+      "imageUrl": "https://picsum.photos/seed/v2/800/600",
+      "imageHint": "event space"
+    },
+    {
+      "id": "venue-3",
+      "description": "Rustic barn for weddings",
+      "imageUrl": "https://picsum.photos/seed/v3/800/600",
+      "imageHint": "rustic barn"
+    },
+    {
+      "id": "bali-1",
+      "description": "Bali sunset beach",
+      "imageUrl": "https://picsum.photos/seed/b1/800/600",
+      "imageHint": "bali beach"
+    },
+    {
+      "id": "hero-main",
+      "description": "Professional booking platform interface",
+      "imageUrl": "https://picsum.photos/seed/h1/1200/800",
+      "imageHint": "modern workspace"
+    }
+  ]
+}
