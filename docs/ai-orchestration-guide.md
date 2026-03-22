@@ -1,3 +1,4 @@
+
 # AI Orchestration Guide: The Sister Schema Prediction Model
 
 This guide outlines how Platformify functions as a **Booking Agnostic Consumer Prediction Model**.

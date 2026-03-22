@@ -1,3 +1,4 @@
+
 # Platformify 🚀
 
 Platformify is a robust, multi-tenant **Booking Agnostic Consumer Prediction Model**. It allows "Platform Owners" to launch niche marketplaces while providing a "Deep Learning" engine that understands purchase intent across any vertical.
