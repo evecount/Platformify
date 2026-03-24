@@ -1,8 +1,22 @@
-export const firebaseConfig = {
-  "projectId": "studio-6077894223-84321",
-  "appId": "1:933461104129:web:e5c52353c113e506865200",
-  "apiKey": "AIzaSyDx9UhhnIbUu_cEvk8S-aZb4Drds09j9J0",
-  "authDomain": "studio-6077894223-84321.firebaseapp.com",
-  "measurementId": "",
-  "messagingSenderId": "933461104129"
+import { initializeApp, getApps, getApp } from "firebase/app";
+import { getFirestore } from "firebase/firestore";
+import { getAuth } from "firebase/auth";
+import { getStorage } from "firebase/storage";
+import { env } from "@/lib/env";
+
+const firebaseConfig = {
+  apiKey: env.NEXT_PUBLIC_FIREBASE_API_KEY,
+  authDomain: env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
+  projectId: env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
+  storageBucket: `${env.NEXT_PUBLIC_FIREBASE_PROJECT_ID}.appspot.com`,
+  messagingSenderId: env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
+  appId: env.NEXT_PUBLIC_FIREBASE_APP_ID,
 };
+
+// Initialize Firebase
+const app = getApps().length > 0 ? getApp() : initializeApp(firebaseConfig);
+const db = getFirestore(app);
+const auth = getAuth(app);
+const storage = getStorage(app);
+
+export { app, db, auth, storage };
